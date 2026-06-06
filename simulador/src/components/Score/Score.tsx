@@ -384,7 +384,7 @@ const Score = () => {
                 </div>
             </div>
 
-            <div className="special-chances">
+            {/* <div className="special-chances">
                 <label>
                     Chances especiales equipo 1:
                     <input className="special-chances-input"
@@ -408,7 +408,7 @@ const Score = () => {
                         onChange={(e) => setSpecialChancesTeam2(parseInt(e.target.value) || 0)}
                     />
                 </label>
-            </div>
+            </div> */}
 
             <div className="score-container">
                 {/* <div className="escuditos">
