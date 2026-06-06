@@ -38,8 +38,8 @@ const Score = () => {
     const [matchDuration, setMatchDuration] = useState<number | null>(null);
     const [isGameStarted, setIsGameStarted] = useState<boolean>(false);
     const [isGameFinished, setIsGameFinished] = useState<boolean>(false);
-    const [specialChancesTeam1, setSpecialChancesTeam1] = useState(0);
-    const [specialChancesTeam2, setSpecialChancesTeam2] = useState(0);
+    const [specialChancesTeam1, ] = useState(0);
+    const [specialChancesTeam2, ] = useState(0);
     const [goalsTeam1, setGoalsTeam1] = useState(0);
     const [goalsTeam2, setGoalsTeam2] = useState(0);
     const [displayedChances, setDisplayedChances] = useState<any[]>([]);
