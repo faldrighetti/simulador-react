@@ -75,14 +75,6 @@ const hardcodedCountries: Country[] = [
           { name: "Hoffenheim", logo: getTeamLogoPath("Hoffenheim"), media: 75 },
         ],
       },
-      {
-        id: 29,
-        nombre: "2. Bundesliga",
-        pais: "Alemania",
-        categoria: 2,
-        teams: [
-        ],
-      },
     ],
   },
   {
@@ -545,14 +537,6 @@ const hardcodedCountries: Country[] = [
           { name: "Stade de Reims", logo: getTeamLogoPath("Stade de Reims"), media: 75 },
           { name: "Toulouse", logo: getTeamLogoPath("Toulouse"), media: 76 },
           { name: "Troyes", logo: getTeamLogoPath("Troyes"), media: 74 },
-        ],
-      },
-      {
-        id: 30,
-        nombre: "Ligue 2",
-        pais: "Francia",
-        categoria: 2,
-        teams: [
         ],
       },
     ],
