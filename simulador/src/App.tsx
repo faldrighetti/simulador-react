@@ -12,6 +12,7 @@ const App: React.FC = () =>  {
     <Router basename="/simulador-react">
       <Routes>
         <Route path="/" element={<Inicio />} />
+        <Route path="/simulador-react/" element={<Inicio />} />
         <Route path="/partido" element={<Partido />} />
         <Route path="/penales" element={<Penales />} />
         <Route path="/penales/simulacion" element={<Penalties />} />
