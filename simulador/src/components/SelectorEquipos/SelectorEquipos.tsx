@@ -1,5 +1,6 @@
 // src/components/SelectorEquipos/SelectorEquipos.tsx
 import React, { useEffect, useState } from "react";
+import { getTeamLogoPath as resolveTeamLogoPath } from "../../utils/logoPath";
 import "./SelectorEquipos.css";
 
 interface Team {
@@ -193,7 +194,7 @@ const hardcodedCountries: Country[] = [
           { name: "Racing (Córdoba)", logo: getTeamLogoPath("Racing (Córdoba)"), media: 61 },
           { name: "San Martín (SJ)", logo: getTeamLogoPath("San Martín (SJ)"), media: 65 },
           { name: "San Martín (T)", logo: getTeamLogoPath("San Martín (T)"), media: 67 },
-          { name: "San Miguel", logo: getTeamLogoPath("San Miguel"), media: 50 },
+          { name: "San Miguel", logo: getTeamLogoPath("San Miguel"), media: 64 },
           { name: "San Telmo", logo: getTeamLogoPath("San Telmo"), media: 64 },
           { name: "Temperley", logo: getTeamLogoPath("Temperley"), media: 67 },
           { name: "Tristán Suárez", logo: getTeamLogoPath("Tristán Suárez"), media: 61 },
@@ -236,7 +237,7 @@ const hardcodedCountries: Country[] = [
         pais: "Argentina",
         categoria: 5,
         teams: [
-          { name: "Argentino (Rosario)", logo: getTeamLogoPath("Argentino (Rosario)"), media: 45 },
+          { name: "Argentino de Rosario", logo: getTeamLogoPath("Argentino de Rosario"), media: 45 },
           { name: "Atlas", logo: getTeamLogoPath("Atlas"), media: 52 },
           { name: "Berazategui", logo: getTeamLogoPath("Berazategui"), media: 51 },
           { name: "Cañuelas", logo: getTeamLogoPath("Cañuelas"), media: 50 },
@@ -253,7 +254,7 @@ const hardcodedCountries: Country[] = [
           { name: "General Lamadrid", logo: getTeamLogoPath("General Lamadrid"), media: 52 },
           { name: "J.J. Urquiza", logo: getTeamLogoPath("J.J. Urquiza"), media: 55 },
           { name: "Juventud Unida", logo: getTeamLogoPath("Juventud Unida"), media: 51 },
-          { name: "Leones FC", logo: getTeamLogoPath("Leones"), media: 50 },
+          { name: "Leones", logo: getTeamLogoPath("Leones"), media: 50 },
           { name: "Leandro N. Alem", logo: getTeamLogoPath("Leandro N. Alem"), media: 52 },
           { name: "Lugano", logo: getTeamLogoPath("Lugano"), media: 51 },
           { name: "Luján", logo: getTeamLogoPath("Luján"), media: 52 },
@@ -272,42 +273,42 @@ const hardcodedCountries: Country[] = [
         pais: "Argentina",
         categoria: 4,
         teams: [
-          { name: "9 de Julio", logo: getTeamLogoPath("9 de Julio"), media: 47 },
+          { name: "9 de Julio", logo: getTeamLogoPath("9 de Julio"), media: 55 },
           { name: "Alvarado", logo: getTeamLogoPath("Alvarado"), media: 63 },
-          { name: "Atenas (RC)", logo: getTeamLogoPath("Atenas (RC)"), media: 1 },
-          { name: "Bartolomé Mitre", logo: getTeamLogoPath("Bartolomé Mitre"), media: 1 },
+          { name: "Atenas (RC)", logo: getTeamLogoPath("Atenas (RC)"), media: 59 },
+          { name: "Bartolomé Mitre", logo: getTeamLogoPath("Bartolomé Mitre"), media: 57 },
           { name: "Boca Unidos", logo: getTeamLogoPath("Boca Unidos"), media: 56 },
           { name: "Círculo Dep. Otamendi", logo: getTeamLogoPath("Círculo Dep. Otamendi"), media: 53 },
           { name: "Cipolletti", logo: getTeamLogoPath("Cipolletti"), media: 60 },
-          { name: "Costa Brava", logo: getTeamLogoPath("Costa Brava"), media: 1 },
-          { name: "Def. de Belgrano (VR)", logo: getTeamLogoPath("Defensores (VR)"), media: 52 },
-          { name: "Def. Pto. Vilelas", logo: getTeamLogoPath("Defensores de Puerto Vilelas"), media: 1 },
-          { name: "Deportivo Argentino", logo: getTeamLogoPath("Deportivo Argentino"), media: 1 },
-          { name: "Deportivo Rincón", logo: getTeamLogoPath("Deportivo Rincón"), media: 1 },
+          { name: "Costa Brava", logo: getTeamLogoPath("Costa Brava"), media: 51 },
+          { name: "Def. de Belgrano (VR)", logo: getTeamLogoPath("Defensores de Belgrano (VR)"), media: 52 },
+          { name: "Def. Pto. Vilelas", logo: getTeamLogoPath("Defensores de Puerto Vilelas"), media: 52 },
+          { name: "Argentino (MM)", logo: getTeamLogoPath("Argentino (MM)"), media: 60 },
+          { name: "Deportivo Rincón", logo: getTeamLogoPath("Deportivo Rincón"), media: 53 },
           { name: "Douglas Haig", logo: getTeamLogoPath("Douglas Haig"), media: 62 },
           { name: "El Linqueño", logo: getTeamLogoPath("El Linqueño"), media: 53 },
-          { name: "Escobar FC", logo: getTeamLogoPath("Escobar FC"), media: 1 },
-          { name: "FADEP", logo: getTeamLogoPath("FADEP"), media: 1 },
+          { name: "Atlético Escobar", logo: getTeamLogoPath("Atlético Escobar "), media: 50 },
+          { name: "FADEP", logo: getTeamLogoPath("FADEP"), media: 54 },
           { name: "Germinal", logo: getTeamLogoPath("Germinal"), media: 52 },
-          { name: "Gimnasia (Ch)", logo: getTeamLogoPath("Gimnasia y Esgrima de Chivilcoy"), media: 1 },
-          { name: "Gimnasia (CDU)", logo: getTeamLogoPath("Gimnasia (CDU)"), media: 60 },
+          { name: "Gimnasia (Ch)", logo: getTeamLogoPath("Gimnasia y Esgrima de Chivilcoy"), media: 54 },
+          { name: "Gimnasia (CdU)", logo: getTeamLogoPath("Gimnasia (CdU)"), media: 60 },
           { name: "Gmo. Brown (Madryn)", logo: getTeamLogoPath("Gmo. Brown (Madryn)"), media: 64 },
           { name: "Huracán Las Heras", logo: getTeamLogoPath("Huracán Las Heras"), media: 51 },
           { name: "Independiente (Ch)", logo: getTeamLogoPath("Independiente Ch"), media: 76 },
           { name: "Juventud Antoniana", logo: getTeamLogoPath("Juventud Antoniana"), media: 58 },
-          { name: "Juventud Unida Universitario", logo: getTeamLogoPath("Juventud Unida Universitario"), media: 1 },
+          { name: "Juventud Unida (SL)", logo: getTeamLogoPath("Juventud Unida (SL)"), media: 56 },
           { name: "Kimberley", logo: getTeamLogoPath("Kimberley"), media: 46 },
           { name: "Olimpo", logo: getTeamLogoPath("Olimpo"), media: 62 },
-          { name: "San Martín (F)", logo: getTeamLogoPath("San Martín Formosa"), media: 56 },
+          { name: "San Martín (F)", logo: getTeamLogoPath("San Martín (F)"), media: 56 },
           { name: "San Martín (Mza)", logo: getTeamLogoPath("San Martín (Mza)"), media: 51 },
           { name: "Santamarina", logo: getTeamLogoPath("Santamarina"), media: 61 },
-          { name: "Sarmiento (La Banda)", logo: getTeamLogoPath("Sarmiento (La Banda)"), media: 1 },
-          { name: "Sarmiento (Res)", logo: getTeamLogoPath("Sarmiento (Res)"), media: 59 },
+          { name: "Sarmiento (LB)", logo: getTeamLogoPath("Sarmiento (LB)"), media: 56 },
+          { name: "Sarmiento (Res)", logo: getTeamLogoPath("Sarmiento (Res)"), media: 54 },
           { name: "Sol de América (F)", logo: getTeamLogoPath("Sol de América (F)"), media: 52 },
           { name: "Sol de Mayo", logo: getTeamLogoPath("Sol de Mayo"), media: 60 },
-          { name: "Sportivo AC", logo: getTeamLogoPath("Sportivo AC"), media: 1 },
           { name: "Sportivo Belgrano", logo: getTeamLogoPath("Sportivo Belgrano"), media: 59 },
-          { name: "Tucumán Central", logo: getTeamLogoPath("Tucumán Central"), media: 1 },
+          { name: "Sportivo Las Parejas", logo: getTeamLogoPath("Sportivo Las Parejas"), media: 58 },
+          { name: "Tucumán Central", logo: getTeamLogoPath("Tucumán Central"), media: 57 },
           { name: "Villa Mitre", logo: getTeamLogoPath("Villa Mitre"), media: 56 },
         ],
       },
@@ -1266,8 +1267,19 @@ const hardcodedCountries: Country[] = [
     fetchData();
   }, []); */
 
+  const getResolvedTeamLogo = (equipo: Team, country?: string) => {
+    if (!country) return equipo.logo;
+
+    return resolveTeamLogoPath(equipo.name, country);
+  };
+
   const handleSeleccion = (equipo: Team) => {
-    onSelectedTeam(equipo);
+    const countryName = selectedLeague?.pais ?? selectedCountry?.name;
+
+    onSelectedTeam({
+      ...equipo,
+      logo: getResolvedTeamLogo(equipo, countryName),
+    });
   };
 
   const siguientePais = () => {
@@ -1317,7 +1329,11 @@ const hardcodedCountries: Country[] = [
               className="equipo-card"
               onClick={() => handleSeleccion(equipo)}
             >
-              <img src={equipo.logo} alt={equipo.name} className="escudos" />
+              <img
+                src={getResolvedTeamLogo(equipo, selectedLeague.pais)}
+                alt={equipo.name}
+                className="escudos"
+              />
               <span className="text name">{equipo.name}</span>
               <span className="text media">{equipo.media}</span>
             </div>
