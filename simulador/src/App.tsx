@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 
 import Inicio from './Inicio.tsx';
 import Partido from './Partido.tsx';
@@ -9,10 +9,9 @@ import Penales from './PenalesSelector.tsx';
 
 const App: React.FC = () =>  {
   return (
-    <Router basename="/simulador-react">
+    <Router>
       <Routes>
         <Route path="/" element={<Inicio />} />
-        <Route path="/simulador-react/" element={<Inicio />} />
         <Route path="/partido" element={<Partido />} />
         <Route path="/penales" element={<Penales />} />
         <Route path="/penales/simulacion" element={<Penalties />} />
