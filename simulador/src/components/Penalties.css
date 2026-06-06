@@ -1,9 +1,11 @@
 /* Penalties.scss */
 .penalties-container {
   font-family: Arial, sans-serif;
-  max-width: 800px;
+  width: min(100%, 846px);
+  max-width: 846px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 0 38px 20px;
+  box-sizing: border-box;
 }
 
 .backbutton{
@@ -15,11 +17,16 @@ h1{
 }
 
 .settings {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-areas:
+    "teams teams teams"
+    "speed user actions";
+  align-items: center;
+  column-gap: 32px;
+  row-gap: 28px;
   margin-bottom: 20px;
-  padding: 15px;
+  padding: 0;
   border-radius: 5px;
 }
 
@@ -34,10 +41,12 @@ h1{
 }
 
 .selected-teams {
+  grid-area: teams;
   display: flex;
-  align-items: center;
-  gap: 2rem;
+  align-items: flex-start;
   justify-content: space-between;
+  gap: 2rem;
+  width: 100%;
 }
 
 .equipo-detalle {
@@ -47,17 +56,16 @@ h1{
   text-align: center;
 }
 
-.detalle-local {
-  margin-right: 5rem;
-}
-
+.detalle-local,
 .detalle-visitante {
   margin-left: 5rem;
+  margin: 0;
 }
 
 .escudo-grande {
   width: 80px;
   height: 80px;
+  object-fit: contain;
   margin-bottom: 0.5rem;
   margin-top: 0.5rem;
 }
@@ -71,6 +79,13 @@ h1{
   font-size: 1rem;
   margin-top: 0.5rem;
   justify-content: center;
+}
+
+.interval-select {
+  grid-area: speed;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
 }
 
 input, select {
@@ -96,7 +111,12 @@ input, select {
 }
 
 .penalties-actions {
-  margin-bottom: 20px;
+  grid-area: actions;
+  margin: 0;
+}
+
+.penalties-actions .btn-jugar {
+  min-width: 144px;
 }
 
 .start-button:disabled {
@@ -225,12 +245,21 @@ input, select {
 }
 
 .user-settings {
+  grid-area: user;
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
   gap: 10px;
-  margin-top: 15px;
-  padding: 10px;
+  margin-top: 0;
+  padding: 0;
   border-radius: 4px;
+}
+
+.user-settings > div {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  white-space: nowrap;
 }
 
 .messages-container {
@@ -249,4 +278,33 @@ input, select {
 
 label {
   margin-right: 5px;
+}
+
+@media (max-width: 720px) {
+  h1 {
+    margin-top: 24px;
+    margin-bottom: 32px;
+  }
+
+  .penalties-container {
+    padding-inline: 20px;
+  }
+
+  .settings {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "teams"
+      "speed"
+      "user"
+      "actions";
+    justify-items: center;
+    row-gap: 20px;
+  }
+
+  .interval-select,
+  .user-settings,
+  .user-settings > div {
+    align-items: center;
+    justify-content: center;
+  }
 }
