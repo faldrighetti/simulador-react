@@ -9,7 +9,7 @@ import Penales from './PenalesSelector.tsx';
 
 const App: React.FC = () =>  {
   return (
-    <Router>
+    <Router basename="/simulador-react">
       <Routes>
         <Route path="/" element={<Inicio />} />
         <Route path="/partido" element={<Partido />} />
