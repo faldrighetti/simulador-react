@@ -569,7 +569,7 @@ const Penalties: React.FC = () => {
         {/* Opciones para el tiro del usuario */}
         {userShotOptions && (
           <div className="user-shot-options">
-            <h3>¡Tu turno! Elegir dirección del tiro:</h3>
+            <h3>¡Tu turno! Elegí a dónde patear:</h3>
             <div className="goal-grid">
               {[...Array(6)].map((_, index) => (
                 <button 
