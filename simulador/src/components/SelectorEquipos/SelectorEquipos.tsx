@@ -33,6 +33,7 @@ const SelectorEquipos: React.FC<Props> = ({ onSelectedTeam }) => {
 
   const selectedCountry = countries[selectedCountryIndex];
   const selectedLeague = selectedCountry?.leagues[selectedLeagueIndex];
+  const hasMultipleLeagues = (selectedCountry?.leagues.length ?? 0) > 1;
 
   const getTeamLogoPath = (name: string, format: "png" | "webp" = "png") => {
     const basePath = "src/assets/Escudos";
@@ -1277,12 +1278,12 @@ const hardcodedCountries: Country[] = [
   };
 
   const siguienteLiga = () => {
-    if (!selectedCountry) return;
+    if (!selectedCountry || !hasMultipleLeagues) return;
     setSelectedLeagueIndex((prev) => (prev + 1) % selectedCountry.leagues.length);
   };
 
   const anteriorLiga = () => {
-    if (!selectedCountry) return;
+  if (!selectedCountry || !hasMultipleLeagues) return;
     setSelectedLeagueIndex((prev) => (prev - 1 + selectedCountry.leagues.length) % selectedCountry.leagues.length);
   };
 
@@ -1297,9 +1298,9 @@ const hardcodedCountries: Country[] = [
 
       {/* Navegación de ligas */}
       <div className="ligas-navegacion">
-        <button onClick={anteriorLiga}>{"<"}</button>
+        <button onClick={anteriorLiga} disabled={!hasMultipleLeagues}>{"<"}</button>
         <span>{selectedLeague?.nombre}</span>
-        <button onClick={siguienteLiga}>{">"}</button>
+        <button onClick={siguienteLiga} disabled={!hasMultipleLeagues}>{">"}</button>
       </div>
 
       {/* Equipos */}
