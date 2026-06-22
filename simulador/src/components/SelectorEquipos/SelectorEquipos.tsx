@@ -4,9 +4,11 @@ import "./SelectorEquipos.css";
 import { getTeamLogoPath } from "../../utils/logoPath";
 
 interface Team {
+  id?: number;
   name: string;
   logo: string;
   media: number;
+  ligaId?: number;
 }
 
 interface League {
@@ -49,9 +51,11 @@ const SelectorEquipos: React.FC<Props> = ({ onSelectedTeam, selectedTeam }) => {
           teams: equipos
             .filter((eq: any) => eq.ligaId === liga.id)
             .map((eq: any) => ({
+              id: eq.id,
               name: eq.nombre,
               media: eq.media,
               logo: getTeamLogoPath(eq.nombre, liga.pais),
+              ligaId: liga.id,
             })),
         }));
 
@@ -82,23 +86,37 @@ const SelectorEquipos: React.FC<Props> = ({ onSelectedTeam, selectedTeam }) => {
   useEffect(() => {
     if (!selectedTeam || countries.length === 0) return;
 
+    const teamBelongsToSelectedLeague = selectedTeam.ligaId
+      ? selectedLeague?.id === selectedTeam.ligaId
+      : selectedLeague?.teams?.some((team) => team.name === selectedTeam.name);
+
+    if (teamBelongsToSelectedLeague) return;
+
+    const teamMatchesSelection = (team: Team, league: League) => {
+      if (selectedTeam.ligaId) {
+        return league.id === selectedTeam.ligaId && team.name === selectedTeam.name;
+      }
+
+      return team.name === selectedTeam.name;
+    };
+
     const countryIndex = countries.findIndex((country) =>
       country.leagues.some((league) =>
-        league.teams?.some((team) => team.name === selectedTeam.name)
+        league.teams?.some((team) => teamMatchesSelection(team, league))
       )
     );
 
     if (countryIndex === -1) return;
 
     const leagueIndex = countries[countryIndex].leagues.findIndex((league) =>
-      league.teams?.some((team) => team.name === selectedTeam.name)
+      league.teams?.some((team) => teamMatchesSelection(team, league))
     );
 
     if (leagueIndex === -1) return;
 
     setSelectedCountryIndex(countryIndex);
     setSelectedLeagueIndex(leagueIndex);
-  }, [countries, selectedTeam]);
+  }, [countries, selectedLeague, selectedTeam]);
 
   const handleSeleccion = (equipo: Team) => {
     onSelectedTeam(equipo);
@@ -147,7 +165,7 @@ const SelectorEquipos: React.FC<Props> = ({ onSelectedTeam, selectedTeam }) => {
           .sort((a, b) => a.name.localeCompare(b.name))
           .map((equipo) => (
             <div
-              key={equipo.name}
+              key={`${equipo.ligaId ?? selectedLeague.id}-${equipo.id ?? equipo.name}`}
               className="equipo-card"
               onClick={() => handleSeleccion(equipo)}
             >
