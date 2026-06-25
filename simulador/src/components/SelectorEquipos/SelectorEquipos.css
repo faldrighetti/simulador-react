@@ -92,3 +92,60 @@
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
+
+.selector-equipos {
+  padding: 0.9rem;
+  border: 1px solid var(--line, rgba(255,255,255,.22));
+  border-radius: 24px;
+  background: linear-gradient(145deg, rgba(255,255,255,.14), rgba(255,255,255,.045));
+  box-shadow: var(--shadow-card, 0 16px 40px rgba(0,0,0,.24));
+  backdrop-filter: blur(14px);
+}
+
+.ligas-navegacion,
+.paises-navegacion {
+  padding: 0.35rem;
+  border-radius: 999px;
+  background: rgba(0,0,0,.18);
+  color: var(--paper, #f8fff0);
+}
+
+.ligas-navegacion button,
+.paises-navegacion button {
+  border: 0;
+  border-radius: 999px;
+  min-width: 2rem;
+  color: #071f15;
+  background: var(--gold, #ffd34d);
+  font-weight: 900;
+}
+
+.equipos-grid { gap: 0.65rem; }
+
+.equipo-card {
+  border-color: rgba(255,255,255,.18);
+  background: rgba(255,255,255,.08);
+  color: var(--paper, #f8fff0);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.12);
+  transition: transform .18s ease, border-color .18s ease, background .18s ease;
+}
+
+.equipo-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--gold, #ffd34d);
+  background: rgba(255,255,255,.16);
+}
+
+.escudos {
+  padding: 0.25rem;
+  border-radius: 12px;
+  background: rgba(255,255,255,.9);
+}
+
+
+/* Los nombres y medias van integrados a la card, sin fondo sólido heredado. */
+.equipo-card .text,
+.equipo-card .name,
+.equipo-card .media {
+  background: transparent;
+}

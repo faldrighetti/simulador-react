@@ -94,3 +94,86 @@
     background-color: #aaa;
     cursor: not-allowed;
 }
+
+body:has(.partido-container) {
+    background:
+      radial-gradient(circle at 50% 0%, rgba(255, 211, 77, 0.2), transparent 22rem),
+      linear-gradient(135deg, #06190f, #0d3a20 55%, #071f15);
+}
+
+.titulo {
+    margin: 0.5rem auto 1rem;
+    color: var(--paper, #f8fff0);
+    font-size: clamp(1.8rem, 4vw, 3.2rem);
+    letter-spacing: -0.04em;
+    text-shadow: 0 12px 28px rgba(0,0,0,.4);
+}
+
+.elegir-equipo {
+    width: fit-content;
+    margin: 0 auto 0.75rem;
+    padding: 0.35rem 1rem;
+    color: #071f15;
+    background: linear-gradient(90deg, var(--gold, #ffd34d), var(--lime, #b7ff62));
+    border-radius: 999px;
+    box-shadow: 0 10px 22px rgba(0,0,0,.25);
+}
+
+.partido-container {
+    gap: clamp(0.75rem, 2vw, 1.5rem);
+    padding: 0 1rem 1.5rem;
+}
+
+.selector-local,
+.selector-visitante,
+.seleccion-resumen {
+    min-width: 0;
+}
+
+.equipo-resumen,
+.equipos-resumen {
+    width: min(190px, 100%);
+    min-height: 10rem;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--line, rgba(255,255,255,.22));
+    border-radius: 24px;
+    background: linear-gradient(145deg, rgba(255,255,255,.16), rgba(255,255,255,.05));
+    box-shadow: var(--shadow-card, 0 16px 40px rgba(0,0,0,.24));
+    backdrop-filter: blur(14px);
+}
+
+.detalle-local,
+.detalle-visitante { margin: 0; }
+
+.escudo-grande {
+    width: 92px;
+    height: 92px;
+    object-fit: contain;
+    padding: 0.65rem;
+    border-radius: 22px;
+    background: rgba(255,255,255,.9);
+    box-shadow: 0 16px 30px rgba(0,0,0,.25);
+}
+
+.nombre { color: var(--paper, #f8fff0); }
+
+.media {
+    color: var(--gold, #ffd34d);
+    font-weight: 900;
+}
+
+.btn-jugar {
+    color: #071f15;
+    background: linear-gradient(90deg, var(--orange, #ff8a3d), var(--gold, #ffd34d));
+    border-radius: 999px;
+    box-shadow: 0 16px 34px rgba(0,0,0,.32);
+}
+
+.btn-jugar:hover:not(:disabled) { transform: translateY(-2px); }
+
+@media (max-width: 900px) {
+    .partido-container { flex-direction: column; }
+    .selector-local, .selector-visitante { width: 100%; height: auto; }
+    .seleccion-resumen { width: 100%; flex-direction: row; justify-content: center; flex-wrap: wrap; }
+}

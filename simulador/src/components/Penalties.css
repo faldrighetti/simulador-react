@@ -263,3 +263,29 @@ input, select {
 label {
   margin-right: 5px;
 }
+
+.penalties-container {
+  color: var(--text, #f8fff0);
+}
+
+.settings,
+.match-result,
+.penalties-table-container,
+.penalty-log,
+.user-shot-options,
+.messages-container {
+  border: 1px solid var(--line, rgba(255,255,255,.22));
+  background: linear-gradient(145deg, rgba(255,255,255,.14), rgba(255,255,255,.045));
+  box-shadow: var(--shadow-card, 0 16px 40px rgba(0,0,0,.24));
+  backdrop-filter: blur(14px);
+}
+
+.penalties-table th { border-color: rgba(255,255,255,.2); }
+
+.shot-position,
+.btn-jugar {
+  background: linear-gradient(90deg, var(--orange, #ff8a3d), var(--gold, #ffd34d));
+  color: #071f15;
+  border-radius: 999px;
+}
+  

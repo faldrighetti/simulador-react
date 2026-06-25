@@ -1,0 +1,64 @@
+:root {
+  --field-900: #06190f;
+  --field-800: #0a2b18;
+  --field-700: #0f4a26;
+  --field-600: #167a3d;
+  --lime: #b7ff62;
+  --gold: #ffd34d;
+  --orange: #ff8a3d;
+  --sky: #63d7ff;
+  --paper: #f8fff0;
+  --glass: rgba(255, 255, 255, 0.1);
+  --glass-strong: rgba(255, 255, 255, 0.16);
+  --line: rgba(255, 255, 255, 0.22);
+  --text: #f8fff0;
+  --muted: rgba(248, 255, 240, 0.72);
+  --shadow-deep: 0 24px 70px rgba(0, 0, 0, 0.38);
+  --shadow-card: 0 16px 40px rgba(0, 0, 0, 0.24);
+  --radius-lg: 28px;
+  --radius-md: 18px;
+}
+
+html {
+  min-height: 100%;
+  background: var(--field-900);
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 12% 14%, rgba(255, 211, 77, 0.22), transparent 22rem),
+    radial-gradient(circle at 84% 8%, rgba(99, 215, 255, 0.18), transparent 20rem),
+    linear-gradient(135deg, var(--field-900), var(--field-800) 45%, #082812);
+}
+
+button,
+a,
+input,
+select {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.backbutton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid rgba(255, 211, 77, 0.65) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: var(--text) !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(12px);
+}
+
+.backbutton:hover {
+  border-color: var(--gold) !important;
+  transform: translateY(-1px);
+}
