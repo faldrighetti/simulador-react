@@ -3,7 +3,11 @@ const logoImports = import.meta.glob("../assets/Escudos/**/*.{png,webp}", {
   import: "default",
 });
 
-const sanitizeName = (name: string) => name.replace(/\s+/g, "_").replace(/[()]/g, "");
+const sanitizeName = (name: string) =>
+  name
+    .replace(/\s+/g, "_")
+    .replace(/[\\/]/g, "_")
+    .replace(/[()]/g, "");
 
 export const getTeamLogoPath = (name: string, country: string) => {
   const sanitizedName = sanitizeName(name);
