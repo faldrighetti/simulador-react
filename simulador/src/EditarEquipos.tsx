@@ -634,7 +634,7 @@ const EditarEquipos: React.FC = () => {
               leaguesByCategory.map(({ categoria, leagues }) => (
                 <div key={`cat-${categoria}`} className="editar-league__category">
                   <div className="editar-league__categoryHeader">
-                    <h3>Categoria {categoria}</h3>
+                    <h3>Categoría {categoria}</h3>
                     <span>{leagues.length} {leagues.length === 1 ? "liga" : "ligas"}</span>
                   </div>
                   <div className="editar-league__lanes">

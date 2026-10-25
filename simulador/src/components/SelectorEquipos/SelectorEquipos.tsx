@@ -86,12 +86,6 @@ const SelectorEquipos: React.FC<Props> = ({ onSelectedTeam, selectedTeam }) => {
   useEffect(() => {
     if (!selectedTeam || countries.length === 0) return;
 
-    const teamBelongsToSelectedLeague = selectedTeam.ligaId
-      ? selectedLeague?.id === selectedTeam.ligaId
-      : selectedLeague?.teams?.some((team) => team.name === selectedTeam.name);
-
-    if (teamBelongsToSelectedLeague) return;
-
     const teamMatchesSelection = (team: Team, league: League) => {
       if (selectedTeam.ligaId) {
         return league.id === selectedTeam.ligaId && team.name === selectedTeam.name;
@@ -116,7 +110,7 @@ const SelectorEquipos: React.FC<Props> = ({ onSelectedTeam, selectedTeam }) => {
 
     setSelectedCountryIndex(countryIndex);
     setSelectedLeagueIndex(leagueIndex);
-  }, [countries, selectedLeague, selectedTeam]);
+  }, [countries, selectedTeam]);
 
   const handleSeleccion = (equipo: Team) => {
     onSelectedTeam(equipo);

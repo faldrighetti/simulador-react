@@ -31,7 +31,7 @@ type Standing = {
   losses: number;
 };
 
-const DEFAULT_MATCHDAYS = 19;
+const DEFAULT_MATCHDAYS = 38;
 
 const SimuladorLiga: React.FC = () => {
   const navigate = useNavigate();
@@ -92,7 +92,12 @@ const SimuladorLiga: React.FC = () => {
 
   useEffect(() => {
     if (!selectedLeague) return;
-    const defaultMatchdays = Math.max(1, selectedLeague.teams.length - 1);
+    let defaultMatchdays;
+    if(selectedLeague.teams.length == 20 || selectedLeague.teams.length == 18){
+      defaultMatchdays = Math.max(1, (selectedLeague.teams.length - 1) * 2);
+    } else {
+      defaultMatchdays = Math.max(1, (selectedLeague.teams.length - 1));
+    }
     setMatchdays(defaultMatchdays || DEFAULT_MATCHDAYS);
     setStandings([]);
   }, [selectedLeague?.id]);

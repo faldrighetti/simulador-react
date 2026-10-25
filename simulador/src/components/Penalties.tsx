@@ -87,7 +87,7 @@ const Penalties: React.FC = () => {
     }
     return onGoal;
   };
-  
+
   const dive = (): number => {
     const divePosition = Math.floor(Math.random() * positions) + 1;
     // Las posiciones 2 y 5 son equivalentes porque el arquero se queda parado en el medio.
