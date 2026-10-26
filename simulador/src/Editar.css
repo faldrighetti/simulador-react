@@ -574,3 +574,38 @@
     position: static;
   }
 }
+
+.editar-page {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(255, 211, 77, 0.17), transparent 22rem),
+    radial-gradient(circle at 90% 14%, rgba(183, 255, 98, 0.14), transparent 20rem),
+    linear-gradient(145deg, #06190f, #0e3b20 58%, #071f15);
+}
+
+.editar-page__title {
+  color: var(--paper, #f8fff0);
+  font-size: clamp(2rem, 5vw, 4rem);
+  letter-spacing: -0.04em;
+}
+
+.editar-panel,
+.editar-toggle,
+.editar-league__category,
+.editar-league__teamCard,
+.editar-team-card {
+  border-color: var(--line, rgba(255,255,255,.22));
+  background: linear-gradient(145deg, rgba(255,255,255,.13), rgba(255,255,255,.045));
+  backdrop-filter: blur(14px);
+}
+
+.editar-toggle__option.is-active,
+.editar-form__submit {
+  background: linear-gradient(90deg, var(--orange, #ff8a3d), var(--gold, #ffd34d));
+  color: #071f15;
+}
+
+.editar-team-card:hover,
+.editar-league__teamCard:hover {
+  border-color: var(--gold, #ffd34d);
+  background: rgba(255,255,255,.14);
+}

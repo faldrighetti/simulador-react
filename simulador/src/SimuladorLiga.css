@@ -197,3 +197,48 @@
     grid-template-columns: 1fr;
   }
 }
+
+.liga-page {
+  background:
+    radial-gradient(circle at 12% 12%, rgba(255, 211, 77, 0.2), transparent 22rem),
+    radial-gradient(circle at 86% 2%, rgba(99, 215, 255, 0.18), transparent 18rem),
+    linear-gradient(145deg, #06190f, #0e3b20 55%, #071f15);
+}
+
+.liga-page__header h1 {
+  color: var(--paper, #f8fff0);
+  font-size: clamp(2rem, 5vw, 4rem);
+  letter-spacing: -0.04em;
+}
+
+.liga-page__selector,
+.liga-page__standings,
+.liga-page__summaryCard {
+  border: 1px solid var(--line, rgba(255,255,255,.22));
+  background: linear-gradient(145deg, rgba(255,255,255,.15), rgba(255,255,255,.055));
+  box-shadow: var(--shadow-card, 0 16px 40px rgba(0,0,0,.24));
+  backdrop-filter: blur(14px);
+}
+
+.liga-page__button,
+.liga-page__nav button {
+  background: linear-gradient(90deg, var(--orange, #ff8a3d), var(--gold, #ffd34d));
+  border-radius: 999px;
+  box-shadow: 0 12px 26px rgba(0,0,0,.24);
+}
+
+.liga-page__button--secondary {
+  background: rgba(255,255,255,.06);
+  color: var(--gold, #ffd34d);
+}
+
+.liga-page__standings li {
+  background: rgba(0, 0, 0, 0.24);
+  border: 1px solid rgba(255,255,255,.08);
+}
+
+.liga-page__standings img {
+  padding: 0.25rem;
+  border-radius: 12px;
+  background: rgba(255,255,255,.9);
+}
