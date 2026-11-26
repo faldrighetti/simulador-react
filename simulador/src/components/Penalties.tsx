@@ -1,12 +1,17 @@
-import React, { useState, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import './Penalties.css';
 import { FaArrowLeft } from 'react-icons/fa';
+
+const REGULATION_KICKS = 5;
+const LINEUP_SIZE = 11;
 
 interface PenaltyRound {
   teamA: boolean | null;
   teamB: boolean | null;
 }
+
+type TeamKey = keyof PenaltyRound;
 
 type Team = {
   name: string;
@@ -20,420 +25,164 @@ const Penalties: React.FC = () => {
   const navigationState = location.state as { local?: Team; visitante?: Team };
   const positions = 6;
   const possibilities = 20;
-  let scored: boolean;
-  
-  // Estado para el intervalo de tiempo (ms)
+
   const [interval, setInterval] = useState<number>(3000);
-  // Estado para mostrar los mensajes de los penales en la UI
-  const [, setMessages] = useState<string[]>([]);
-  // Estado para controlar si la tanda está en curso
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [isFinished, setIsFinished] = useState<boolean>(false);
-  // Estado para guardar el resultado del partido
   const [matchResult, setMatchResult] = useState<string>('');
-  // Equipos
   const [teamA] = useState<string>(navigationState?.local?.name ?? "River");
   const [teamB] = useState<string>(navigationState?.visitante?.name ?? "San Lorenzo");
-  // Estado para los penales individuales
   const [penaltyRounds, setPenaltyRounds] = useState<PenaltyRound[]>([]);
-  // Estado para los totales
-  const [scoreA, setScoreA] = useState<number>(0);
-  const [scoreB, setScoreB] = useState<number>(0);
-  // Estado para control de ronda actual
+  const [score, setScore] = useState({ teamA: 0, teamB: 0 });
   const [currentRound, setCurrentRound] = useState<number>(0);
 
-  // Estados para la participación del usuario
   const [userWillShoot, setUserWillShoot] = useState<boolean>(false);
-  const [userTeam, setUserTeam] = useState<string>("teamA");
-  const [userRound, setUserRound] = useState<number | string>(1);
+  const [userTeam, setUserTeam] = useState<TeamKey>("teamA");
+  const [userRound, setUserRound] = useState<number | 'random'>(1);
   const [userShotOptions, setUserShotOptions] = useState<boolean>(false);
-  const userShotResultRef = useRef<boolean | null>(null);
+  const pendingUserShotRef = useRef<((position: number) => void) | null>(null);
   const timeoutIdRef = useRef<number | null>(null);
-  const continueShootoutRef = useRef<() => void>(() => {
-    console.log("Si llegaste acá, está mal.");
-  });
 
-  const clearScheduledStep = () => {
-    if (timeoutIdRef.current) {
-      clearTimeout(timeoutIdRef.current);
+  const clearPendingActions = useCallback(() => {
+    if (timeoutIdRef.current !== null) {
+      window.clearTimeout(timeoutIdRef.current);
       timeoutIdRef.current = null;
     }
-  };
+    pendingUserShotRef.current = null;
+  }, []);
+
+  useEffect(() => clearPendingActions, [clearPendingActions]);
 
   const resetShootout = () => {
-    clearScheduledStep();
+    clearPendingActions();
     setIsRunning(false);
     setIsFinished(false);
     setPenaltyRounds([]);
-    setScoreA(0);
-    setScoreB(0);
+    setScore({ teamA: 0, teamB: 0 });
     setCurrentRound(0);
     setUserShotOptions(false);
     setMatchResult('');
-    setMessages([]);
-    userShotResultRef.current = null;
-    continueShootoutRef.current = () => {
-      console.log("Si llegaste acá, está mal.");
-    };
   };
 
-  const shoot = (): number => { return Math.floor(Math.random() * positions) + 1; };  // Patear a una de las 6 zonas. 
-  
-  const shootOnGoal = (): boolean => { // Si el tiro llega o no al arco
-    let onGoal = false;
-    const result = Math.floor(Math.random() * possibilities) + 1;
-    if (result <= 17) {
-      onGoal = true;
-    }
-    return onGoal;
-  };
-  
+  const shoot = (): number => Math.floor(Math.random() * positions) + 1;
+  const shootOnGoal = (): boolean => Math.floor(Math.random() * possibilities) + 1 <= 17;
+
   const dive = (): number => {
     const divePosition = Math.floor(Math.random() * positions) + 1;
     // Las posiciones 2 y 5 son equivalentes porque el arquero se queda parado en el medio.
     return divePosition === 5 ? 2 : divePosition;
   };
-    
-  const penaltyShot = (userSelectedPosition?: number): boolean => {
-    // Usar la posición seleccionada por el usuario si está disponible, de lo contrario elegir aleatoriamente
-    const shotPosition = userSelectedPosition !== undefined ? userSelectedPosition : shoot();
-  
-    if (shotPosition !== 5) {
-      const destination = shootOnGoal();
-      const goalkeeperPosition = dive();
 
-      if (!destination) {
-        scored = false;
-      }
-      else if (goalkeeperPosition === shotPosition) {
-        const saveChance = Math.floor(Math.random() * possibilities) + 1;
-        scored = saveChance > 18;
-      }
-      else {
-        scored = true;
-      }
+  const penaltyShot = (shotPosition = shoot()): boolean => {
+    const onGoal = shotPosition === 5 || shootOnGoal();
+    const goalkeeperPosition = dive();
 
-    } else {
-      // Tiro a la posición 2
-      const goalkeeperPosition = dive();
-      if (goalkeeperPosition === 2) {
-        const saveChance = Math.floor(Math.random() * possibilities) + 1;
-        scored = saveChance > 18;
-      } else {
-        scored = true;
-      }
+    if (!onGoal) {
+      return false;
     }
 
-    return scored;
+    const target = shotPosition === 5 ? 2 : shotPosition;
+    return goalkeeperPosition !== target || Math.floor(Math.random() * possibilities) + 1 > 18;
   };
 
-  const addMessage = (msg: string) => {
-    setMessages(prevMessages => [...prevMessages, msg]);
-    console.log(msg);
-  };
-
-  // Función para actualizar el resultado de un penal en la tabla
-  const updatePenaltyResult = (team: 'teamA' | 'teamB', scored: boolean, round: number) => {
-    setPenaltyRounds(prevRounds => {
-      const newRounds = [...prevRounds];
-      // Si la ronda no existe, creamos todas las necesarias hasta esa ronda
-      while (newRounds.length <= round) {
-        newRounds.push({ teamA: null, teamB: null });
-      }
-      
-      // Actualizamos el resultado del penal
-      newRounds[round] = {
-        ...newRounds[round],
-        [team]: scored
-      };
-      
-      return newRounds;
+  const updatePenaltyResult = (team: TeamKey, scored: boolean, round: number) => {
+    setPenaltyRounds(previousRounds => {
+      const rounds = [...previousRounds];
+      const index = round - 1;
+      const attempt = rounds[index] ?? { teamA: null, teamB: null };
+      rounds[index] = { ...attempt, [team]: scored };
+      return rounds;
     });
-    
-    // Actualizamos el marcador total
-    if (team === 'teamA' && scored) {
-      setScoreA(prev => prev + 1);
-    } else if (team === 'teamB' && scored) {
-      setScoreB(prev => prev + 1);
-    }
   };
 
-  // Función para manejar el tiro del usuario
   const handleUserShot = (position: number) => {
-    setUserShotOptions(false);
-    
-    const userScored = penaltyShot(position);
-    const teamKey = userTeam as 'teamA' | 'teamB';
-    const teamName = teamKey === 'teamA' ? teamA : teamB;
+    const playShot = pendingUserShotRef.current;
+    if (playShot === null) {
+      return;
+    }
 
-    userShotResultRef.current = userScored;
-    
-    addMessage(`¡TU TURNO! Pateas a la posición ${position}`);
-    addMessage(`${teamName} ${userScored ? "gol" : "erra"}!`); // "River gol!"
-    
-    // Actualizamos el estado local que reflejará correctamente el resultado
-    // pero NO actualizamos el contador total aquí, lo hará el sistema general
-    
-    // Actualizar tabla de penales únicamente
-    // Nota: NO modificamos scoreA o scoreB aquí porque causaría doble conteo
-    updatePenaltyResult(teamKey, userScored, currentRound - 1); //TeamA, 6, NRonda -1
-    
-    // Continuar con la tanda de penales
-    resumeShootout();
-  };
-  
-  const resumeShootout = () => {
-    // Esta función se llamará después de que el usuario patea
-    continueShootoutRef.current();
+    pendingUserShotRef.current = null;
+    setUserShotOptions(false);
+    console.log(`¡TU TURNO! Pateas a la posición ${position}`);
+    playShot(position);
   };
 
   const penaltyShootout = () => {
-    // Limpiar mensajes anteriores
     resetShootout();
     setIsRunning(true);
-    setIsFinished(false);    
-    const rounds = 5;
-    let turnoA = 1;
-    let turnoB = 1;
-    let teamAScore = 0;
-    let teamBScore = 0;
-    let estado = "A"; // A, B, SuddenA, SuddenB
-    let suddenDeathRound = 1;
-    
-    // Calcular exactamente en qué momento el usuario pateará
-    // La ronda del usuario puede ser aleatoria
-    let actualUserRound = userRound;
-    if (userWillShoot) {
-      if (userRound === 'random') {
-        actualUserRound = Math.floor(Math.random() * 11) + 1;
-        addMessage(`Se ha seleccionado aleatoriamente que patearás en la ronda ${actualUserRound}`);
-      } else {
-        addMessage(`Patearás en la ronda ${actualUserRound}`);
-      }
-    }
-  
-    addMessage(`${teamA} vs ${teamB} - Tanda de penales`);
-    
-    // Variable para controlar si estamos esperando la acción del usuario
-    let waitingForUser = false;
-    
-    // Función que ejecutará cada paso de la tanda
-    const nextStep = () => {
-      // Si estamos esperando al usuario, no avanzamos
-      if (waitingForUser) {
-        return;
-      }
-      
-      // Determinar si es el turno del usuario
-      const currentTeamTurn = estado === "A" || estado === "SuddenA" ? "teamA" : "teamB";
-      const currentShooterRound = estado === "A" || estado === "SuddenA" ? turnoA : turnoB;
-      
-      // Calcular el número de tiro global (para cuando hay más de 11 jugadores)
-      const globalTurnNumber = currentShooterRound > 11 ? ((currentShooterRound - 1) % 11) + 1 : currentShooterRound;
-      
-      //setCurrentPenaltyTurn(globalTurnNumber);
-      
-     const isUserShooting = userWillShoot && currentTeamTurn === userTeam &&
-                            Number(actualUserRound) === globalTurnNumber;
-      
-      if (isUserShooting) {
-        // Es el turno del usuario
-        setUserShotOptions(true);
-        waitingForUser = true;
-        setCurrentRound(currentShooterRound);
-        
-        // Almacenar el estado actual para continuarlo después del tiro del usuario
-        const currentEstado = estado;
-        
-        addMessage(`¡Es tu turno de patear por ${currentTeamTurn === 'teamA' ? teamA : teamB}!`);
-        addMessage(`Selecciona una posición para tu tiro (1-6)`);
-        
-        // Definir la función que continuará después del tiro del usuario
-        continueShootoutRef.current = () => {
-          // Actualizar los contadores globales con el resultado del tiro del usuario
-          // Esto lo hacemos aquí para que se refleje en la lógica de la tanda
-          const userScoredResult = userShotResultRef.current;
-          
-          if (userScoredResult) {
-            if (currentTeamTurn === 'teamA') {
-              teamAScore++;
-            } else {
-              teamBScore++;
-            }
-          }
-          userShotResultRef.current = null;
-          waitingForUser = false;
-          
-          // Continuamos con el flujo normal
-          if (currentEstado === "A") {
-            estado = "B";
-          } else if (currentEstado === "B") {
-            turnoA++;
-            turnoB++;
-            
-            if (turnoA > rounds && turnoB > rounds && teamAScore === teamBScore) {
-              estado = "SuddenA";
-            } else if (turnoA > rounds && turnoB > rounds) {
-              const ganador = teamAScore > teamBScore ? teamA : teamB;
-              addMessage(`${ganador} gana!`);
-              setMatchResult(`Resultado final: ${teamA} ${teamAScore} - ${teamBScore} ${teamB}`);
-              setIsRunning(false);
-              setIsFinished(true);
-              clearScheduledStep();
-              return;
-            } else {
-              estado = "A";
-            }
-          } else if (currentEstado === "SuddenA") {
-            estado = "SuddenB";
-          } else if (currentEstado === "SuddenB") {
-              if (teamAScore !== teamBScore) {
-                const ganador = teamAScore > teamBScore ? teamA : teamB;
-                addMessage(`${ganador} gana!`);
-                setMatchResult(`Resultado final: ${teamA} ${teamAScore} - ${teamBScore} ${teamB}`);
-                setIsRunning(false);
-                setIsFinished(true);
-                clearScheduledStep();
-                return;
-              } else {
-                suddenDeathRound++;
-                estado = "SuddenA";
-              }
-          }
-          timeoutIdRef.current = window.setTimeout(nextStep, interval);
-        };
-        
-        return;
-      }
-      
-      if (estado === "A") {
-        // Verificar si el equipo A ya ganó matemáticamente
-        if (teamAScore > teamBScore + (rounds - turnoB + 1)) {
-          addMessage(`${teamA} gana!`);
-          setMatchResult(`Resultado final: ${teamA} ${teamAScore} - ${teamBScore} ${teamB}`);
-          setIsRunning(false);
-          setIsFinished(true);
-          clearScheduledStep();
-          return;
-        }
-  
-        const teamAScored = penaltyShot();
-        const restantesA = rounds - turnoA;
-        if (teamAScored) teamAScore++;
-        
-        addMessage(`Ronda ${turnoA}:`);
-        addMessage(`${teamA} ${teamAScored ? "gol" : "erra"}! Total: ${teamAScore}. Restantes: ${restantesA}`);
-        
-        // Actualizar tabla de penales
-        updatePenaltyResult('teamA', teamAScored, turnoA - 1);
-        setCurrentRound(turnoA);
-  
-        // Verificar si el equipo A ya ganó matemáticamente
-        if (teamAScore > teamBScore + (rounds - turnoB + 1)) {
-          addMessage(`${teamA} gana!`);
-          setMatchResult(`Resultado final: ${teamA} ${teamAScore} - ${teamBScore} ${teamB}`);
-          setIsRunning(false);
-          setIsFinished(true);
-          clearScheduledStep();
-          return;
-        }
-  
-        // Verificar si el equipo B ya ganó matemáticamente
-        if (teamBScore > teamAScore + (rounds - turnoA)) {
-          addMessage(`${teamB} gana!`);
-          setMatchResult(`Resultado final: ${teamA} ${teamAScore} - ${teamBScore} ${teamB}`);
-          setIsRunning(false);
-          setIsFinished(true);
-          clearScheduledStep();
-          return;
-        }
 
-        estado = "B";
-      } else if (estado === "B") {
-        const teamBScored = penaltyShot();
-        const restantesB = rounds - turnoB;
-        if (teamBScored) teamBScore++;
-        
-        addMessage(`${teamB} ${teamBScored ? "gol" : "erra"}! Total: ${teamBScore}. Restantes: ${restantesB}`);
-        
-        // Actualizar tabla de penales
-        updatePenaltyResult('teamB', teamBScored, turnoB - 1);
-  
-        // Verificar si el equipo B ya ganó matemáticamente
-        if (teamBScore > teamAScore + (rounds - turnoA)) {
-          addMessage(`${teamB} gana!`);
-          setMatchResult(`Resultado final: ${teamA} ${teamAScore} - ${teamBScore} ${teamB}`);
-          setIsRunning(false);
-          setIsFinished(true);
-          clearScheduledStep();
-          return;
-        }
-  
-        turnoA++;
-        turnoB++;
-  
-        if (turnoA > rounds && turnoB > rounds && teamAScore === teamBScore) {
-          addMessage("Empate tras los 5 penales. Vamos a muerte súbita.");
-          estado = "SuddenA";
-        } else if (turnoA > rounds && turnoB > rounds) {
-          const ganador = teamAScore > teamBScore ? teamA : teamB;
-          addMessage(`${ganador} gana!`);
-          setMatchResult(`Resultado final: ${teamA} ${teamAScore} - ${teamBScore} ${teamB}`);
-          setIsRunning(false);
-          setIsFinished(true);
-          clearScheduledStep();
-          return;
-        } else {
-          estado = "A";
-        }
-      } else if (estado === "SuddenA") {
-        addMessage(`Ronda ${suddenDeathRound + 5} - Muerte súbita ${suddenDeathRound}:`);
-  
-        const teamAScored = penaltyShot();
-        if (teamAScored) teamAScore++;
-        
-        addMessage(`${teamA} ${teamAScored ? "gol" : "erra"}! Total: ${teamAScore}`);
-        
-        // Actualizar tabla de penales
-        updatePenaltyResult('teamA', teamAScored, rounds + suddenDeathRound - 1);
-        setCurrentRound(rounds + suddenDeathRound);
-  
-        estado = "SuddenB";
-      } else if (estado === "SuddenB") {
-        const teamBScored = penaltyShot();
-        if (teamBScored) teamBScore++;
-        
-        addMessage(`${teamB} ${teamBScored ? "gol" : "erra"}! Total: ${teamBScore}`);
-        
-        // Actualizar tabla de penales
-        updatePenaltyResult('teamB', teamBScored, rounds + suddenDeathRound - 1);
-  
-        if (teamAScore !== teamBScore) {
-          const ganador = teamAScore > teamBScore ? teamA : teamB;
-          addMessage(`${ganador} gana!`);
-          setMatchResult(`Resultado final: ${teamA} ${teamAScore} - ${teamBScore} ${teamB}`);
-          setIsRunning(false);
-          setIsFinished(true);
-          clearScheduledStep();
-          return;
-        } else {
-          suddenDeathRound++;
-          estado = "SuddenA";
-        }
+    const shotsTaken = { teamA: 0, teamB: 0 };
+    const goals = { teamA: 0, teamB: 0 };
+    let shootingTeam: TeamKey = 'teamA';
+    let userLineupPosition: number | null = null;
+
+    if (userWillShoot) {
+      userLineupPosition = userRound === 'random'
+        ? Math.floor(Math.random() * LINEUP_SIZE) + 1
+        : userRound;
+      console.log(`Patearás en la ronda ${userLineupPosition}`);
+    }
+
+    console.log(`${teamA} vs ${teamB} - Tanda de penales`);
+
+    const playShot = (position?: number) => {
+      const scored = penaltyShot(position);
+      const round = ++shotsTaken[shootingTeam];
+
+      if (scored) {
+        goals[shootingTeam]++;
+        setScore({ ...goals });
       }
-      
-      // Programar el siguiente paso
+      updatePenaltyResult(shootingTeam, scored, round);
+
+      const teamName = shootingTeam === 'teamA' ? teamA : teamB;
+      console.log(`${teamName} ${scored ? "gol" : "erra"}! Total: ${goals[shootingTeam]}`);
+
+      const remainingA = Math.max(REGULATION_KICKS - shotsTaken.teamA, 0);
+      const remainingB = Math.max(REGULATION_KICKS - shotsTaken.teamB, 0);
+      const goalDifference = goals.teamA - goals.teamB;
+      // En muerte súbita, los dos equipos tienen que completar la ronda.
+      const canDecideWinner = round <= REGULATION_KICKS || shotsTaken.teamA === shotsTaken.teamB;
+
+      if (canDecideWinner && (goalDifference > remainingB || -goalDifference > remainingA)) {
+        const winner = goalDifference > 0 ? teamA : teamB;
+        console.log(`${winner} gana!`);
+        setMatchResult(`Resultado final: ${teamA} ${goals.teamA} - ${goals.teamB} ${teamB}`);
+        setIsRunning(false);
+        setIsFinished(true);
+        return;
+      }
+
+      if (round === REGULATION_KICKS && shootingTeam === 'teamB') {
+        console.log('Empate tras los 5 penales. Vamos a muerte súbita.');
+      }
+
+      shootingTeam = shootingTeam === 'teamA' ? 'teamB' : 'teamA';
       timeoutIdRef.current = window.setTimeout(nextStep, interval);
     };
-    
-    // Iniciar la tanda
+
+    const nextStep = () => {
+      timeoutIdRef.current = null;
+      const round = shotsTaken[shootingTeam] + 1;
+      setCurrentRound(round);
+
+      if (shootingTeam === 'teamA') {
+        const phase = round > REGULATION_KICKS ? ` - Muerte súbita ${round - REGULATION_KICKS}` : '';
+        console.log(`Ronda ${round}${phase}:`);
+      }
+
+      const lineupPosition = ((round - 1) % LINEUP_SIZE) + 1;
+      if (shootingTeam === userTeam && lineupPosition === userLineupPosition) {
+        pendingUserShotRef.current = playShot;
+        setUserShotOptions(true);
+        console.log(`¡Es tu turno de patear por ${shootingTeam === 'teamA' ? teamA : teamB}!`);
+        return;
+      }
+
+      playShot();
+    };
+
     timeoutIdRef.current = window.setTimeout(nextStep, interval);
-    
-    // Guardar la función para continuar después del tiro del usuario
-    continueShootoutRef.current = () => {
-      waitingForUser = false;
-      timeoutIdRef.current = window.setTimeout(nextStep, interval);
-    };
   };
 
   const handleIntervalChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -441,7 +190,7 @@ const Penalties: React.FC = () => {
   };
 
   const handleUserTeamChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setUserTeam(e.target.value);
+    setUserTeam(e.target.value as TeamKey);
   };
 
   const handleUserWillShootChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -469,6 +218,11 @@ const Penalties: React.FC = () => {
       },
     });
   }
+
+  const displayedRounds = Array.from(
+    { length: Math.max(REGULATION_KICKS, penaltyRounds.length, currentRound) },
+    (_, index) => index + 1
+  );
 
   return (
     <div className="penalties-page">
@@ -540,7 +294,7 @@ const Penalties: React.FC = () => {
                       disabled={isRunning}
                     >
                       <option value="random">Aleatorio</option>
-                      {[...Array(11)].map((_, index) => (
+                      {[...Array(LINEUP_SIZE)].map((_, index) => (
                         <option key={index + 1} value={index + 1}>{index + 1}</option>
                       ))}
                     </select>
@@ -596,9 +350,9 @@ const Penalties: React.FC = () => {
               <thead>
                 <tr>
                   <th className="team-name">Equipo</th>
-                  {[...Array(Math.max(5, penaltyRounds.length))].map((_, index) => (
-                    <th key={index} className={`penalty-round ${currentRound === index + 1 ? 'current-round' : ''}`}>
-                      {index + 1}
+                  {displayedRounds.map(round => (
+                    <th key={round} className={`penalty-round ${currentRound === round ? 'current-round' : ''}`}>
+                      {round}
                     </th>
                   ))}
                   <th className="penalty-total">Total</th>
@@ -607,27 +361,27 @@ const Penalties: React.FC = () => {
               <tbody>
                 <tr>
                   <td className="team-name">{teamA}</td>
-                  {[...Array(Math.max(5, penaltyRounds.length))].map((_, index) => (
-                    <td key={index} className={`penalty-result ${currentRound === index + 1 ? 'current-round' : ''}`}>
+                  {displayedRounds.map(round => (
+                    <td key={round} className={`penalty-result ${currentRound === round ? 'current-round' : ''}`}>
                       {renderPenaltyResult(
-                        penaltyRounds[index]?.teamA ?? null, 
-                        isRunning && currentRound === index + 1 && penaltyRounds[index]?.teamB === undefined
+                        penaltyRounds[round - 1]?.teamA ?? null,
+                        userShotOptions && userTeam === 'teamA' && currentRound === round
                       )}
                     </td>
                   ))}
-                  <td className="penalty-total">{scoreA}</td>
+                  <td className="penalty-total">{score.teamA}</td>
                 </tr>
                 <tr>
                   <td className="team-name">{teamB}</td>
-                  {[...Array(Math.max(5, penaltyRounds.length))].map((_, index) => (
-                    <td key={index} className={`penalty-result ${currentRound === index + 1 ? 'current-round' : ''}`}>
+                  {displayedRounds.map(round => (
+                    <td key={round} className={`penalty-result ${currentRound === round ? 'current-round' : ''}`}>
                       {renderPenaltyResult(
-                        penaltyRounds[index]?.teamB ?? null,
-                        isRunning && currentRound === index + 1 && penaltyRounds[index]?.teamA !== undefined && penaltyRounds[index]?.teamB === undefined
+                        penaltyRounds[round - 1]?.teamB ?? null,
+                        userShotOptions && userTeam === 'teamB' && currentRound === round
                       )}
                     </td>
                   ))}
-                  <td className="penalty-total">{scoreB}</td>
+                  <td className="penalty-total">{score.teamB}</td>
                 </tr>
               </tbody>
             </table>
