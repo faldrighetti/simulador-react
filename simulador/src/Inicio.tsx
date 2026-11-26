@@ -3,10 +3,12 @@ import { Link } from "react-router-dom";
 import { GiSoccerKick, GiGoalKeeper, GiLaurelsTrophy } from "react-icons/gi";
 import { FaEdit } from "react-icons/fa";
 import "./Inicio.css";
+import ExportarDatos from "./components/ExportarDatos";
 
 const Inicio: React.FC = () => {
   return (
     <main className="inicio-page">
+      <ExportarDatos />
       <header className="inicio-page__header">
         <h1 className="inicio-page__title">Simulador de Partidos</h1>
         <p className="inicio-page__subtitle">Seleccioná una opción para comenzar:</p>
