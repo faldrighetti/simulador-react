@@ -60,6 +60,17 @@ const Penalties = () => {
         let teamAScore = 0;
         let teamBScore = 0;
         let i = 1;
+
+        const finishEarly = (remainingA: number, remainingB: number): boolean => {
+          const goalDifference = teamAScore - teamBScore;
+          if (goalDifference <= remainingB && -goalDifference <= remainingA) {
+            return false;
+          }
+
+          const winner = goalDifference > 0 ? teamA : teamB;
+          console.log(`${winner} wins early!`);
+          return true;
+        };
       
         console.log(`${teamA} vs ${teamB} - Penalty Shootout Start`);
       
@@ -70,8 +81,9 @@ const Penalties = () => {
           if (teamAScored) teamAScore++;
           console.log(`${teamA} ${teamAScored ? "scores" : "misses"}! Total: ${teamAScore}`);
       
-          if (teamAScore > teamBScore + (rounds - i)) {
-            console.log(`${teamA} wins early!`);
+          const remainingA = rounds - i;
+          // El equipo B todavía tiene su tiro de esta ronda.
+          if (finishEarly(remainingA, remainingA + 1)) {
             return;
           }
       
@@ -79,8 +91,7 @@ const Penalties = () => {
           if (teamBScored) teamBScore++;
           console.log(`${teamB} ${teamBScored ? "scores" : "misses"}! Total: ${teamBScore}`);
       
-          if (teamBScore > teamAScore + (rounds - i)) {
-            console.log(`${teamB} wins early!`);
+          if (remainingA > 0 && finishEarly(remainingA, remainingA)) {
             return;
           }
       
